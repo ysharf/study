@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>لوحة المذاكرة — أولى ثانوي</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{color-scheme:dark;--bg:#0b0c0e;--p:rgba(18,19,22,.88);--p2:#1a1c20;--bd:#2a2d33;--tx:#ececee;--mu:#80848d;--rd:4px;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+*{scrollbar-width:thin;scrollbar-color:#3a3d44 transparent}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#33363c;border-radius:6px;border:2px solid var(--bg)}
+::-webkit-scrollbar-thumb:hover{background:#4a4e56}
+::selection{background:rgba(255,255,255,.2);color:#fff}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;color:var(--tx);font-family:Cairo,Tahoma,Arial,sans-serif;min-height:100vh;background-color:var(--bg);
+background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:30px 30px;background-attachment:fixed;overflow-x:hidden}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:1px solid var(--bd);border-radius:var(--rd)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--tx);outline-offset:1px}
+.app{display:grid;grid-template-columns:280px 1fr;min-height:100vh}
+aside{background:#101114;border-inline-end:1px solid var(--bd);padding:20px 16px;display:flex;flex-direction:column;gap:16px}
+aside h1{font-size:18px;font-weight:800;margin:0}
+.addsub{display:flex;border:1px solid var(--bd);border-radius:var(--rd);overflow:hidden;background:var(--bg)}
+.addsub input{flex:1;min-width:0;background:none;border:0;padding:9px 11px}
+.addsub button{border:0;border-radius:0;background:var(--tx);color:#000;font-weight:800;padding:0 16px;transition:opacity .15s}
+.addsub button:hover{opacity:.88}
+#subs{display:flex;flex-direction:column;gap:4px}
+.sub{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;border:1px solid transparent;border-inline-start:3px solid transparent;border-radius:var(--rd);padding:9px 10px;cursor:pointer;transition:background .15s}
+.sub:hover{background:var(--p2)}
+.sub.on{background:var(--p2);border-color:var(--bd);border-inline-start-color:var(--sc)}
+.sub b{font-weight:600;color:var(--sc);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.x{border:0!important;color:var(--mu);padding:2px 6px;font-size:12px}
+.x:hover,.x.arm{color:#ff5a4e}
+.sub .bar{grid-column:1/-1;height:3px;background:var(--bd);border-radius:2px;overflow:hidden}
+.sub .bar i{display:block;height:100%;background:var(--sc);transition:width .4s cubic-bezier(.2,.8,.2,1)}
+.cp{-webkit-appearance:none;appearance:none;width:20px;height:20px;padding:0;border:2px solid rgba(255,255,255,.25);border-radius:50%;background:none;cursor:pointer;flex:none;overflow:hidden}
+.cp::-webkit-color-swatch-wrapper{padding:0}
+.cp::-webkit-color-swatch{border:0;border-radius:50%}
+.cp::-moz-color-swatch{border:0;border-radius:50%}
+.cp:hover{border-color:var(--tx)}
+
+main{padding:20px 24px;display:flex;flex-direction:column;gap:18px;min-width:0}
+.top{display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:space-between}
+#title{background:none;border:0;border-bottom:2px solid transparent;font-size:26px;font-weight:800;padding:2px 0;min-width:0;width:min(360px,100%)}
+#title:hover,#title:focus{border-bottom-color:var(--bd);outline:0}
+
+#board{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:16px;align-items:start}
+.col{background:var(--p);border:1px solid var(--bd);border-top:3px solid var(--c);border-radius:var(--rd);min-height:340px;display:flex;flex-direction:column;transition:background .15s,border-color .15s,box-shadow .15s;backdrop-filter:blur(6px);cursor:pointer}
+.col.active-col{border-color:var(--c);box-shadow:0 0 0 1px var(--c),0 12px 32px -8px rgba(0,0,0,.7)}
+.col.over{background:var(--p2);box-shadow:0 0 0 2px var(--c)}
+.col header{display:flex;gap:8px;align-items:center;padding:10px 12px;border-bottom:1px solid var(--bd);cursor:grab;user-select:none;touch-action:none}
+.col header:active{cursor:grabbing}
+.grip{color:var(--mu);font-size:15px;line-height:1;cursor:grab;padding:2px;opacity:.7;transition:opacity .15s}
+.col header:hover .grip{opacity:1;color:var(--c)}
+.cn{flex:1;min-width:0;background:none;border:0;border-bottom:1px solid transparent;font-weight:800;color:var(--c);padding:2px 0;cursor:text}
+.cn:hover,.cn:focus{border-bottom-color:var(--bd);outline:0}
+.col header span.cnt{color:var(--mu);font-size:12px;background:var(--bg);padding:1px 8px;border-radius:3px;border:1px solid var(--bd)}
+
+.col-add{display:flex;align-items:center;margin:10px 10px 0;background:var(--bg);border:1px solid var(--bd);border-radius:3px;overflow:hidden;transition:border-color .15s}
+.col.active-col .col-add,.col-add:focus-within{border-color:var(--c)}
+.col-inp{flex:1;min-width:0;background:none;border:0;padding:8px 10px;font-size:13.5px;outline:0 !important}
+.col-cam{border:0;border-inline-start:1px solid var(--bd);border-radius:0;padding:7px 9px;color:var(--mu);font-size:14px;transition:color .15s,background .15s}
+.col-cam:hover{color:var(--tx);background:var(--p2)}
+.col-go{border:0;border-radius:0;background:var(--c);color:#000;font-weight:800;padding:7px 12px;font-size:15px;line-height:1;transition:opacity .15s}
+.col-go:hover{opacity:.88}
+
+.list{padding:10px;display:flex;flex-direction:column;gap:8px;flex:1;min-height:230px}
+.card{flex-wrap:wrap;background:var(--bg);border:1px solid var(--bd);border-inline-start:3px solid var(--c);border-radius:3px;padding:9px 11px;cursor:grab;display:flex;gap:5px;align-items:center;user-select:none;touch-action:none;position:relative;transition:border-color .15s,background .15s}
+.card:hover,.card:focus-within{border-color:var(--c);background:#111317}
+.card.img-drop{outline:2px dashed var(--c);background:var(--p2)}
+
+/* تصميم النص الثابت (غير قابل للنقل) */
+.card.fixed{cursor:default;background:rgba(255,255,255,.025);border-color:transparent;border-inline-start:2px solid var(--c);padding:7px 10px}
+.card.fixed:hover{border-color:var(--bd);border-inline-start-color:var(--c)}
+.card.fixed .ct{font-weight:700;color:var(--c);cursor:default;border-bottom:0}
+.pin-btn{border:0;color:var(--mu);padding:3px 5px;font-size:11px;line-height:1;opacity:.45;transition:opacity .15s,color .15s,background .15s}
+.card:hover .pin-btn,.pin-btn.on{opacity:1}
+.pin-btn.on{color:var(--c)}
+.card.fixed .pin-btn{opacity:0}
+.card.fixed:hover .pin-btn{opacity:.9}
+
+.ct{flex:1;min-width:110px;background:none;border:0;border-bottom:1px dashed transparent;padding:2px 0;line-height:1.45;color:var(--tx);outline:0 !important;cursor:text}
+.ct:focus{border-bottom-color:var(--c)}
+.card button{border:0;color:var(--mu);padding:3px 5px;line-height:1;border-radius:3px;transition:color .15s,background .15s}
+.card button:hover{color:var(--tx);background:var(--p2)}
+.card .d:hover{color:#ff5a4e;background:rgba(255,90,78,.12)}
+.addcol{min-height:120px;border:1px dashed var(--mu);color:var(--mu);font-weight:800;font-size:20px;background:rgba(18,19,22,.5);transition:color .15s,border-color .15s,background .15s}
+.addcol:hover{color:var(--tx);border-color:var(--tx);background:var(--p2)}
+
+/* تنسيق الصور */
+.card-img-wrap{flex:0 0 100%;position:relative;margin-top:4px;border-radius:3px;overflow:hidden;background:#070809;border:1px solid var(--bd)}
+.card-img-wrap img{width:100%;max-height:220px;object-fit:contain;display:block;cursor:zoom-in;transition:transform .25s ease}
+.card-img-wrap:hover img{transform:scale(1.015)}
+.del-img{position:absolute;top:6px;left:6px;background:rgba(11,12,14,.85)!important;color:#ff5a4e!important;border:1px solid var(--bd)!important;padding:4px 7px!important;font-size:11px;opacity:0;transition:opacity .15s}
+.card-img-wrap:hover .del-img{opacity:1}
+
+/* أنميشن السحب الفيزيائي */
+.dragging-clone{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;box-shadow:0 22px 45px rgba(0,0,0,.78);border-color:var(--c)!important;background:#16181d!important;cursor:grabbing;transition:none!important}
+.card-placeholder{background:rgba(255,255,255,.025);border:1px dashed var(--c);border-radius:3px;pointer-events:none}
+.col-placeholder{background:rgba(255,255,255,.02);border:2px dashed var(--c);border-radius:var(--rd);min-height:340px;pointer-events:none}
+
+#lb{position:fixed;inset:0;background:rgba(5,6,8,.92);backdrop-filter:blur(6px);z-index:60;display:flex;align-items:center;justify-content:center;padding:20px;cursor:zoom-out;animation:fadeIn .18s ease}
+#lb[hidden]{display:none}
+#lbi{max-width:95vw;max-height:92vh;border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,.85);animation:popIn .2s cubic-bezier(.2,.8,.2,1)}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:10000}
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+@media(max-width:820px){.app{grid-template-columns:1fr}aside{border-inline-end:0;border-bottom:1px solid var(--bd)}main{padding:16px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside>
+  <h1>أولى ثانوي</h1>
+  <form class="addsub" id="fs"><input id="ns" maxlength="40" autocomplete="off"><button type="submit">+</button></form>
+  <div id="subs"></div>
+</aside>
+<main>
+  <div class="top">
+    <input id="title" maxlength="40">
+  </div>
+  <div id="board"></div>
+</main>
+</div>
+
+<input type="file" id="fi-col" accept="image/*" hidden>
+<input type="file" id="fi-card" accept="image/*" hidden>
+
+<div id="lb" hidden><img id="lbi" alt=""></div>
+<canvas id="fx"></canvas>
+
+<script>
+const KEY='study-board-v2',PAL=['#4de3c1','#6aa8ff','#ff7ab6','#ffb23e','#b48cff','#8ee05a'];
+const uid=()=>Math.random().toString(36).slice(2,9);
+const esc=s=>(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const defCols=()=>[{id:uid(),name:'متراكم',c:'#ff5a4e'},{id:uid(),name:'متذاكر',c:'#ffb23e'},{id:uid(),name:'متقن مذاكرته',c:'#4de3c1'}];
+const $=id=>document.getElementById(id);
+
+/* =========================================================
+   1. حفظ الصور (IndexedDB)
+========================================================= */
+const IMG_CACHE = new Map();
+let db = null;
+
+function initImageDB() {
+  return new Promise(resolve => {
+    const req = indexedDB.open('StudyBoardImagesDB', 1);
+    req.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('images')) d.createObjectStore('images');
+    };
+    req.onsuccess = e => {
+      db = e.target.result;
+      const tx = db.transaction('images', 'readonly');
+      const store = tx.objectStore('images');
+      const getAllKeys = store.getAllKeys();
+      const getAllVals = store.getAll();
+      tx.oncomplete = () => {
+        const keys = getAllKeys.result || [];
+        const vals = getAllVals.result || [];
+        keys.forEach((k, i) => IMG_CACHE.set(k, vals[i]));
+        resolve();
+      };
+      tx.onerror = () => resolve();
+    };
+    req.onerror = () => resolve();
+  });
+}
+
+function storeImageInDB(dataUrl) {
+  const imgId = 'img_' + uid() + Date.now().toString(36);
+  IMG_CACHE.set(imgId, dataUrl);
+  if (db) {
+    try {
+      const tx = db.transaction('images', 'readwrite');
+      tx.objectStore('images').put(dataUrl, imgId);
+    } catch (_) {}
+  }
+  return imgId;
+}
+
+function deleteImageFromDB(imgId) {
+  if (!imgId || !imgId.startsWith('img_')) return;
+  IMG_CACHE.delete(imgId);
+  if (db) {
+    try {
+      const tx = db.transaction('images', 'readwrite');
+      tx.objectStore('images').delete(imgId);
+    } catch (_) {}
+  }
+}
+
+function getImageSrc(imgRef) {
+  if (!imgRef) return null;
+  if (imgRef.startsWith('img_')) return IMG_CACHE.get(imgRef) || null;
+  return imgRef;
+}
+
+/* =========================================================
+   2. إدارة البيانات والحالة
+========================================================= */
+let S=null;
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
+if(!S||!Array.isArray(S.subjects)){
+  let old=null;try{old=JSON.parse(localStorage.getItem('study-board-v1'))}catch(e){}
+  if(old&&Array.isArray(old.subjects)){
+    S={active:old.active,subjects:old.subjects.map((s,i)=>{const cols=defCols();return{id:s.id,name:s.name,color:PAL[i%PAL.length],cols,lessons:(s.lessons||[]).map(l=>({id:l.id,t:l.t,col:cols[Math.min(l.s,2)].id}))}})};
+  }else{
+    S={active:null,subjects:['عربي','إنجليزي','رياضيات','علوم متكاملة','تاريخ','فلسفة ومنطق'].map((n,i)=>({id:uid(),name:n,color:PAL[i%PAL.length],cols:defCols(),lessons:[]}))};
+  }
+  if(!S.subjects.find(s=>s.id===S.active))S.active=S.subjects[0]?S.subjects[0].id:null;
+}
+
+function migrateOldImages() {
+  let changed = false;
+  S.subjects.forEach(s => {
+    (s.lessons || []).forEach(l => {
+      if (l.img && l.img.startsWith('data:image/')) {
+        l.img = storeImageInDB(l.img);
+        changed = true;
+      }
+    });
+  });
+  if (changed) save();
+}
+
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const cur=()=>S.subjects.find(s=>s.id===S.active);
+
+let activeColId = null;
+let targetColForImg = null;
+let targetCardForImg = null;
+let armed = null;
+
+function ensureActiveCol() {
+  const s = cur();
+  if (!s || !s.cols.length) { activeColId = null; return null; }
+  if (!s.cols.some(c => c.id === activeColId)) {
+    activeColId = s.cols[0].id;
+  }
+  return activeColId;
+}
+
+function setActiveCol(colId, focusInput = false) {
+  activeColId = colId;
+  document.querySelectorAll('.col[data-col]').forEach(el => {
+    el.classList.toggle('active-col', el.dataset.col === colId);
+  });
+  if (focusInput) {
+    const inp = document.querySelector(`.col[data-col="${colId}"] .col-inp`);
+    if (inp && document.activeElement !== inp) inp.focus();
+  }
+}
+
+function shrink(f){
+  return new Promise(res=>{
+    const r=new FileReader();
+    r.onload=()=>{
+      const im=new Image();
+      im.onload=()=>{
+        const maxDim=1200, k=Math.min(1,maxDim/Math.max(im.width,im.height));
+        const c=document.createElement('canvas');
+        c.width=Math.round(im.width*k); c.height=Math.round(im.height*k);
+        const g=c.getContext('2d');
+        g.drawImage(im,0,0,c.width,c.height);
+        let out = c.toDataURL('image/webp', 0.86);
+        if(!out.startsWith('data:image/webp')) out = c.toDataURL('image/jpeg', 0.86);
+        res(out);
+      };
+      im.onerror=()=>res(null);
+      im.src=r.result;
+    };
+    r.onerror=()=>res(null);
+    r.readAsDataURL(f);
+  });
+}
+
+async function handleImageFile(f, { colId = null, cardId = null } = {}) {
+  if(!f || !f.type.startsWith('image/')) return;
+  const s = cur();
+  if(!s) return;
+
+  const u = await shrink(f);
+  if(!u) return;
+
+  if (cardId) {
+    const l = s.lessons.find(x => x.id === cardId);
+    if (l) {
+      if (l.img) deleteImageFromDB(l.img);
+      l.img = storeImageInDB(u);
+      save();
+      render();
+    }
+    return;
+  }
+
+  const targetCol = colId || ensureActiveCol();
+  if (!targetCol) return;
+
+  const colInp = document.querySelector(`.col[data-col="${targetCol}"] .col-inp`);
+  const typedText = colInp ? colInp.value.trim() : '';
+
+  const newLessonId = uid();
+  const imgRef = storeImageInDB(u);
+  s.lessons.push({ id: newLessonId, t: typedText, col: targetCol, img: imgRef });
+  save();
+  setActiveCol(targetCol);
+  render();
+
+  const colObj = s.cols.find(c => c.id === targetCol);
+  const newCardEl = document.querySelector(`.card[data-id="${newLessonId}"]`);
+  if (newCardEl) {
+    const r = newCardEl.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, colObj ? colObj.c : '#4de3c1', 28);
+    if (!typedText) {
+      const ct = newCardEl.querySelector('.ct');
+      if (ct) ct.focus();
+    } else {
+      const newColInp = document.querySelector(`.col[data-col="${targetCol}"] .col-inp`);
+      if (newColInp) newColInp.focus();
+    }
+  }
+}
+
+$('fi-col').addEventListener('change', e => {
+  if (targetColForImg && e.target.files[0]) handleImageFile(e.target.files[0], { colId: targetColForImg });
+  targetColForImg = null; e.target.value = '';
+});
+
+$('fi-card').addEventListener('change', e => {
+  if (targetCardForImg && e.target.files[0]) handleImageFile(e.target.files[0], { cardId: targetCardForImg });
+  targetCardForImg = null; e.target.value = '';
+});
+
+addEventListener('paste', e => {
+  const it = [...((e.clipboardData && e.clipboardData.items) || [])].find(i => i.type.startsWith('image/'));
+  if (it && cur()) {
+    e.preventDefault();
+    const colEl = document.activeElement && document.activeElement.closest('.col');
+    const colId = colEl ? colEl.dataset.col : ensureActiveCol();
+    handleImageFile(it.getAsFile(), { colId });
+  }
+});
+
+addEventListener('dragover', e => {
+  if (e.dataTransfer && [...e.dataTransfer.types].includes('Files')) {
+    e.preventDefault();
+    const card = e.target.closest('.card:not(.fixed)');
+    const col = e.target.closest('.col');
+    document.querySelectorAll('.card.img-drop').forEach(x => x !== card && x.classList.remove('img-drop'));
+    if (card) card.classList.add('img-drop');
+    if (col) setActiveCol(col.dataset.col);
+  }
+});
+addEventListener('dragleave', e => {
+  if (e.target.closest) {
+    const card = e.target.closest('.card');
+    if (card) card.classList.remove('img-drop');
+  }
+});
+addEventListener('drop', e => {
+  document.querySelectorAll('.card.img-drop').forEach(x => x.classList.remove('img-drop'));
+  if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files.length) {
+    const file = e.dataTransfer.files[0];
+    if (file.type.startsWith('image/')) {
+      e.preventDefault();
+      const card = e.target.closest('.card:not(.fixed)');
+      const col = e.target.closest('.col');
+      if (card) handleImageFile(file, { cardId: card.dataset.id });
+      else handleImageFile(file, { colId: col ? col.dataset.col : ensureActiveCol() });
+    }
+  }
+});
+
+$('lb').addEventListener('click', () => { $('lb').hidden = true });
+addEventListener('keydown', e => { if (e.key === 'Escape') $('lb').hidden = true });
+
+/* =========================================================
+   3. بناء الواجهة
+========================================================= */
+function render(skipFlip = false) {
+  ensureActiveCol();
+
+  const draftInputs = {};
+  document.querySelectorAll('.col[data-col]').forEach(colEl => {
+    const inp = colEl.querySelector('.col-inp');
+    if (inp && inp.value) draftInputs[colEl.dataset.col] = inp.value;
+  });
+
+  const oldCards = {}, oldCols = {};
+  if (!skipFlip) {
+    document.querySelectorAll('.card[data-id]').forEach(el => oldCards[el.dataset.id] = el.getBoundingClientRect());
+    document.querySelectorAll('.col[data-col]').forEach(el => oldCols[el.dataset.col] = el.getBoundingClientRect());
+  }
+
+  $('subs').innerHTML = S.subjects.map(s => {
+    const tasks = s.lessons.filter(l => !l.fixed);
+    const n = tasks.length, last = s.cols[s.cols.length - 1].id, m = tasks.filter(l => l.col === last).length;
+    return `<div class="sub${s.id === S.active ? ' on' : ''}" data-sub="${s.id}" style="--sc:${s.color}">
+      <input type="color" class="cp" data-subcolor value="${s.color}">
+      <div><b>${esc(s.name)}</b></div>
+      <button class="x${armed === s.id ? ' arm' : ''}" data-delsub>✕</button>
+      <div class="bar"><i style="width:${n ? m / n * 100 : 0}%"></i></div>
+    </div>`;
+  }).join('');
+
+  const s = cur();
+  if (document.activeElement !== $('title')) $('title').value = s ? s.name : '';
+  $('title').style.color = s ? s.color : '';
+  $('title').disabled = !s;
+  if (!s) { $('board').innerHTML = ''; return; }
+
+  $('board').innerHTML = s.cols.map(c => {
+    const ls = s.lessons.filter(l => l.col === c.id);
+    const tasksCount = ls.filter(l => !l.fixed).length;
+    const isAct = c.id === activeColId;
+    const draftVal = draftInputs[c.id] || '';
+    return `<section class="col${isAct ? ' active-col' : ''}" data-col="${c.id}" style="--c:${c.c}">
+      <header>
+        <span class="grip">⠿</span>
+        <input type="color" class="cp" data-colcolor value="${c.c}">
+        <input class="cn" data-colname value="${esc(c.name)}" maxlength="30">
+        <span class="cnt">${tasksCount}</span>
+        ${s.cols.length > 1 ? `<button class="x${armed === c.id ? ' arm' : ''}" data-delcol>✕</button>` : ''}
+      </header>
+
+      <form class="col-add" data-coladd>
+        <input class="col-inp" value="${esc(draftVal)}" maxlength="80" autocomplete="off">
+        <button type="button" class="col-cam" data-colcam>📷</button>
+        <button type="submit" class="col-go">+</button>
+      </form>
+
+      <div class="list">${ls.map(l => {
+        const imgSrc = getImageSrc(l.img);
+        const isFixed = Boolean(l.fixed);
+        return `<div class="card${isFixed ? ' fixed' : ''}" data-id="${l.id}">
+          ${(!isFixed && c !== s.cols[0]) ? '<button data-mv="-1">→</button>' : ''}
+          <input class="ct" data-cardtitle value="${esc(l.t)}" maxlength="80" ${isFixed ? 'readonly' : ''}>
+          ${(!isFixed && c !== s.cols[s.cols.length - 1]) ? '<button data-mv="1">←</button>' : ''}
+          <button class="pin-btn${isFixed ? ' on' : ''}" data-fix>📌</button>
+          ${!isFixed ? `<button data-addimg>🖼️</button><button class="d" data-del>✕</button>` : ''}
+          ${imgSrc ? `<div class="card-img-wrap"><img src="${imgSrc}" alt="" draggable="false" data-zoom>${!isFixed ? `<button class="del-img" data-delimg>✕</button>` : ''}</div>` : ''}
+        </div>`;
+      }).join('')}
+      </div>
+    </section>`;
+  }).join('') + '<button class="addcol" data-addcol>+</button>';
+
+  if (!skipFlip) {
+    document.querySelectorAll('.card[data-id]').forEach(el => {
+      const o = oldCards[el.dataset.id], n = el.getBoundingClientRect();
+      if (o) {
+        const dx = o.left - n.left, dy = o.top - n.top;
+        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) el.animate([{ transform: `translate(${dx}px,${dy}px)` }, { transform: 'none' }], { duration: 280, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      } else {
+        el.animate([{ opacity: 0, transform: 'scale(.92)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: 'ease-out' });
+      }
+    });
+    document.querySelectorAll('.col[data-col]').forEach(el => {
+      const o = oldCols[el.dataset.col], n = el.getBoundingClientRect();
+      if (o) {
+        const dx = o.left - n.left, dy = o.top - n.top;
+        if (Math.abs(dx) > 1 || Math.abs(dy) > 1) el.animate([{ transform: `translate(${dx}px,${dy}px)` }, { transform: 'none' }], { duration: 300, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      }
+    });
+  }
+}
+
+function animateLiveSiblings(selector, oldRects) {
+  document.querySelectorAll(selector).forEach(el => {
+    const id = el.dataset.id || el.dataset.col;
+    const o = oldRects[id];
+    if (!o) return;
+    const n = el.getBoundingClientRect();
+    const dx = o.left - n.left, dy = o.top - n.top;
+    if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+      el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], {
+        duration: 220,
+        easing: 'cubic-bezier(.2,.8,.2,1)'
+      });
+    }
+  });
+}
+
+function moveLesson(id, to, beforeId) {
+  const s = cur(), i = s.lessons.findIndex(l => l.id === id);
+  if (i < 0 || s.lessons[i].fixed) return;
+  const [l] = s.lessons.splice(i, 1);
+  l.col = to;
+  const j = beforeId ? s.lessons.findIndex(x => x.id === beforeId) : -1;
+  if (j < 0) s.lessons.push(l); else s.lessons.splice(j, 0, l);
+  setActiveCol(to);
+  save(); render();
+  const targetCol = s.cols.find(c => c.id === to);
+  const last = s.cols[s.cols.length - 1];
+  const el = document.querySelector(`.card[data-id="${id}"]`);
+  if (el && targetCol) {
+    const r = el.getBoundingClientRect();
+    burst(r.left + r.width / 2, r.top + r.height / 2, targetCol.c, to === last.id && s.cols.length > 1 ? 48 : 18);
+  }
+}
+
+/* =========================================================
+   4. الأحداث والأزرار
+========================================================= */
+$('fs').addEventListener('submit', e => {
+  e.preventDefault();
+  const v = $('ns').value.trim();
+  if (!v) return;
+  const s = { id: uid(), name: v, color: PAL[S.subjects.length % PAL.length], cols: defCols(), lessons: [] };
+  S.subjects.push(s); S.active = s.id; activeColId = s.cols[0].id;
+  $('ns').value = ''; save(); render();
+});
+
+$('title').addEventListener('change', () => { const s = cur(), v = $('title').value.trim(); if (s && v) { s.name = v; save(); } render(); });
+$('title').addEventListener('keydown', e => { if (e.key === 'Enter') e.target.blur(); });
+
+$('subs').addEventListener('click', e => {
+  if (e.target.closest('.cp')) return;
+  const row = e.target.closest('[data-sub]'); if (!row) return;
+  const id = row.dataset.sub;
+  if (e.target.closest('[data-delsub]')) {
+    if (armed === id) {
+      const subToDel = S.subjects.find(x => x.id === id);
+      if (subToDel) subToDel.lessons.forEach(l => l.img && deleteImageFromDB(l.img));
+      S.subjects = S.subjects.filter(x => x.id !== id);
+      if (S.active === id) S.active = S.subjects[0] ? S.subjects[0].id : null;
+      armed = null; save();
+    } else armed = id;
+    render(); return;
+  }
+  S.active = id; armed = null; ensureActiveCol(); save(); render();
+});
+
+$('subs').addEventListener('input', e => {
+  if (!e.target.matches('[data-subcolor]')) return;
+  const row = e.target.closest('[data-sub]'), s = S.subjects.find(x => x.id === row.dataset.sub);
+  s.color = e.target.value; row.style.setProperty('--sc', s.color);
+  if (s.id === S.active) $('title').style.color = s.color;
+  save();
+});
+
+$('board').addEventListener('submit', e => {
+  const form = e.target.closest('[data-coladd]');
+  if (!form) return;
+  e.preventDefault();
+  const colEl = form.closest('.col');
+  const colId = colEl.dataset.col;
+  const inp = form.querySelector('.col-inp');
+  const val = inp.value.trim();
+  const s = cur();
+  if (!val || !s) return;
+
+  const newId = uid();
+  s.lessons.push({ id: newId, t: val, col: colId });
+  inp.value = '';
+  setActiveCol(colId);
+  save();
+  render();
+
+  const newInp = document.querySelector(`.col[data-col="${colId}"] .col-inp`);
+  if (newInp) newInp.focus();
+});
+
+$('board').addEventListener('focusin', e => {
+  const col = e.target.closest('.col');
+  if (col) setActiveCol(col.dataset.col, false);
+});
+
+$('board').addEventListener('input', e => {
+  const s = cur();
+  if (!s) return;
+  if (e.target.matches('[data-colcolor]')) {
+    const sec = e.target.closest('.col'), c = s.cols.find(x => x.id === sec.dataset.col);
+    c.c = e.target.value; sec.style.setProperty('--c', c.c); save();
+  } else if (e.target.matches('[data-cardtitle]')) {
+    const card = e.target.closest('.card'), l = s.lessons.find(x => x.id === card.dataset.id);
+    if (l && !l.fixed) { l.t = e.target.value; save(); }
+  }
+});
+
+$('board').addEventListener('change', e => {
+  const s = cur();
+  if (!s) return;
+  if (e.target.matches('[data-colname]')) {
+    const c = s.cols.find(x => x.id === e.target.closest('.col').dataset.col), v = e.target.value.trim();
+    if (v) c.name = v; else e.target.value = c.name;
+    save();
+  }
+});
+
+$('board').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.target.matches('[data-colname]') || e.target.matches('[data-cardtitle]'))) {
+    e.preventDefault();
+    const col = e.target.closest('.col');
+    if (col) {
+      const inp = col.querySelector('.col-inp');
+      if (inp) inp.focus(); else e.target.blur();
+    }
+  }
+});
+
+$('board').addEventListener('click', e => {
+  if (justDragged) return;
+  const s = cur(); if (!s) return;
+
+  const z = e.target.closest('[data-zoom]');
+  if (z) { $('lbi').src = z.src; $('lb').hidden = false; return; }
+
+  if (e.target.closest('[data-addcol]')) {
+    const nc = { id: uid(), name: '+', c: PAL[s.cols.length % PAL.length] };
+    s.cols.push(nc);
+    activeColId = nc.id;
+    save(); render();
+    const ins = document.querySelectorAll('[data-colname]');
+    const f = ins[ins.length - 1];
+    if (f) { f.focus(); f.select(); f.scrollIntoView({ inline: 'center', block: 'nearest' }); }
+    return;
+  }
+
+  const colEl = e.target.closest('.col');
+  if (!colEl) return;
+  const colId = colEl.dataset.col;
+
+  if (e.target.closest('[data-colcam]')) {
+    setActiveCol(colId, false);
+    targetColForImg = colId;
+    $('fi-col').click();
+    return;
+  }
+
+  const dc = e.target.closest('[data-delcol]');
+  if (dc) {
+    const has = s.lessons.some(l => l.col === colId);
+    if (!has || armed === colId) {
+      s.lessons.filter(l => l.col === colId).forEach(l => l.img && deleteImageFromDB(l.img));
+      s.cols = s.cols.filter(c => c.id !== colId);
+      s.lessons = s.lessons.filter(l => l.col !== colId);
+      armed = null; ensureActiveCol(); save();
+    } else armed = colId;
+    render(); return;
+  }
+
+  const card = e.target.closest('.card');
+  if (card) {
+    setActiveCol(colId, false);
+    const id = card.dataset.id, l = s.lessons.find(x => x.id === id);
+    if (!l) return;
+
+    // زر تثبيت النص كعنصر ثابت غير قابل للنقل
+    if (e.target.closest('[data-fix]')) {
+      l.fixed = !l.fixed;
+      save();
+      render(true);
+      return;
+    }
+
+    if (l.fixed) return;
+
+    const mv = e.target.closest('[data-mv]');
+    if (mv) {
+      const i = s.cols.findIndex(c => c.id === l.col) + Number(mv.dataset.mv);
+      if (s.cols[i]) moveLesson(id, s.cols[i].id, null);
+    } else if (e.target.closest('[data-addimg]')) {
+      targetCardForImg = id;
+      $('fi-card').click();
+    } else if (e.target.closest('[data-delimg]')) {
+      if (l.img) { deleteImageFromDB(l.img); delete l.img; save(); render(); }
+    } else if (e.target.closest('[data-del]')) {
+      if (l.img) deleteImageFromDB(l.img);
+      s.lessons = s.lessons.filter(x => x.id !== id); save(); render();
+    }
+    return;
+  }
+
+  if (!e.target.closest('input, button')) {
+    setActiveCol(colId, true);
+  }
+});
+
+/* =========================================================
+   5. محرك السحب والإفلات الفيزيائي (يتجاهل النصوص المثبتة)
+========================================================= */
+let drag = null, justDragged = false;
+
+$('board').addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  if (e.target.closest('button, .cp, .cn, .col-add, [data-zoom]')) return;
+
+  const card = e.target.closest('.card');
+  if (card && card.classList.contains('fixed')) return; // منع سحب النص الثابت
+
+  const colHeader = e.target.closest('.col > header');
+  if (!card && !colHeader) return;
+
+  const isCol = Boolean(colHeader && !card);
+  const targetEl = isCol ? colHeader.closest('.col') : card;
+  const colEl = targetEl.closest('.col');
+  const accentColor = getComputedStyle(colEl).getPropertyValue('--c').trim() || '#4de3c1';
+
+  drag = {
+    type: isCol ? 'col' : 'card',
+    el: targetEl,
+    id: isCol ? targetEl.dataset.col : targetEl.dataset.id,
+    color: accentColor,
+    startX: e.clientX,
+    startY: e.clientY,
+    started: false,
+    active: true
+  };
+
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointercancel', onPointerUp);
+});
+
+function startPhysicsDrag(e) {
+  drag.started = true;
+  if (document.activeElement) document.activeElement.blur();
+  const rect = drag.el.getBoundingClientRect();
+
+  const ph = document.createElement('div');
+  ph.className = drag.type === 'col' ? 'col-placeholder' : 'card-placeholder';
+  ph.style.height = `${rect.height}px`;
+  ph.style.setProperty('--c', drag.color);
+
+  const clone = drag.el.cloneNode(true);
+  clone.classList.add('dragging-clone');
+  clone.style.width = `${rect.width}px`;
+  clone.style.height = `${rect.height}px`;
+  clone.style.setProperty('--c', drag.color);
+  document.body.appendChild(clone);
+
+  drag.el.parentNode.insertBefore(ph, drag.el);
+  drag.el.style.display = 'none';
+
+  drag.ph = ph;
+  drag.clone = clone;
+  drag.offsetX = drag.startX - rect.left;
+  drag.offsetY = drag.startY - rect.top;
+  drag.currentX = rect.left;
+  drag.currentY = rect.top;
+  drag.targetX = e.clientX - drag.offsetX;
+  drag.targetY = e.clientY - drag.offsetY;
+  drag.velocityX = 0;
+  drag.rotation = 0;
+
+  requestAnimationFrame(tickDragPhysics);
+}
+
+function onPointerMove(e) {
+  if (!drag || !drag.active) return;
+
+  if (!drag.started) {
+    if (Math.hypot(e.clientX - drag.startX, e.clientY - drag.startY) > 6) {
+      startPhysicsDrag(e);
+    } else return;
+  }
+
+  drag.targetX = e.clientX - drag.offsetX;
+  drag.targetY = e.clientY - drag.offsetY;
+
+  spawnTrail(e.clientX, e.clientY, drag.color);
+
+  if (drag.type === 'card') {
+    const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+    if (!elemBelow) return;
+    const col = elemBelow.closest('.col');
+    document.querySelectorAll('.col.over').forEach(c => c !== col && c.classList.remove('over'));
+
+    if (col) {
+      col.classList.add('over');
+      const list = col.querySelector('.list');
+      const afterEl = getCardAfter(list, e.clientY);
+
+      if ((afterEl && drag.ph.nextSibling === afterEl) || (!afterEl && drag.ph.parentNode === list && !drag.ph.nextSibling)) return;
+
+      const oldRects = {};
+      document.querySelectorAll('.card[data-id]').forEach(c => {
+        if (c !== drag.el) oldRects[c.dataset.id] = c.getBoundingClientRect();
+      });
+
+      if (!afterEl) list.appendChild(drag.ph);
+      else list.insertBefore(drag.ph, afterEl);
+
+      const newColColor = getComputedStyle(col).getPropertyValue('--c').trim();
+      if (newColColor) {
+        drag.color = newColColor;
+        drag.clone.style.setProperty('--c', newColColor);
+        drag.ph.style.setProperty('--c', newColColor);
+      }
+
+      animateLiveSiblings('.card[data-id]', oldRects);
+    }
+  } else if (drag.type === 'col') {
+    const board = $('board');
+    const cols = [...board.querySelectorAll('.col:not([style*="display: none"])')];
+    const targetCol = cols.find(c => {
+      const r = c.getBoundingClientRect();
+      return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+    });
+
+    if (targetCol) {
+      const oldRects = {};
+      cols.forEach(c => oldRects[c.dataset.col] = c.getBoundingClientRect());
+
+      const r = targetCol.getBoundingClientRect();
+      const midX = r.left + r.width / 2;
+      if (e.clientX > midX) board.insertBefore(drag.ph, targetCol);
+      else board.insertBefore(drag.ph, targetCol.nextSibling);
+
+      animateLiveSiblings('.col[data-col]', oldRects);
+    }
+  }
+}
+
+function getCardAfter(list, y) {
+  const cards = [...list.querySelectorAll('.card:not([style*="display: none"])')];
+  return cards.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) return { offset, element: child };
+    return closest;
+  }, { offset: Number.NEGATIVE_INFINITY }).element;
+}
+
+function tickDragPhysics() {
+  if (!drag || !drag.active || !drag.started) return;
+
+  const prevX = drag.currentX;
+  drag.currentX += (drag.targetX - drag.currentX) * 0.35;
+  drag.currentY += (drag.targetY - drag.currentY) * 0.35;
+
+  drag.velocityX = drag.currentX - prevX;
+  const maxTilt = drag.type === 'col' ? 6 : 12;
+  const targetRot = Math.max(-maxTilt, Math.min(maxTilt, drag.velocityX * 0.6));
+  drag.rotation += (targetRot - drag.rotation) * 0.25;
+
+  drag.clone.style.transform = `translate3d(${drag.currentX}px, ${drag.currentY}px, 0) rotate(${drag.rotation}deg) scale(1.025)`;
+  requestAnimationFrame(tickDragPhysics);
+}
+
+function onPointerUp() {
+  window.removeEventListener('pointermove', onPointerMove);
+  window.removeEventListener('pointerup', onPointerUp);
+  window.removeEventListener('pointercancel', onPointerUp);
+
+  if (!drag) return;
+  drag.active = false;
+
+  if (!drag.started) {
+    drag = null;
+    return;
+  }
+
+  justDragged = true;
+  setTimeout(() => justDragged = false, 50);
+
+  document.querySelectorAll('.col.over').forEach(c => c.classList.remove('over'));
+
+  const s = cur();
+  const dropRect = drag.ph.getBoundingClientRect();
+  const cxPos = dropRect.left + dropRect.width / 2;
+  const cyPos = dropRect.top + dropRect.height / 2;
+
+  if (drag.type === 'card') {
+    const targetColEl = drag.ph.closest('.col');
+    const newColId = targetColEl ? targetColEl.dataset.col : s.cols[0].id;
+    const nextCardEl = drag.ph.nextElementSibling;
+    const beforeId = (nextCardEl && nextCardEl.classList.contains('card')) ? nextCardEl.dataset.id : null;
+
+    drag.ph.remove();
+    drag.clone.remove();
+    drag.el.style.display = '';
+
+    const idx = s.lessons.findIndex(l => l.id === drag.id);
+    if (idx >= 0) {
+      const [l] = s.lessons.splice(idx, 1);
+      l.col = newColId;
+      const bIdx = beforeId ? s.lessons.findIndex(x => x.id === beforeId) : -1;
+      if (bIdx < 0) s.lessons.push(l);
+      else s.lessons.splice(bIdx, 0, l);
+      activeColId = newColId;
+      save();
+    }
+
+    const lastCol = s.cols[s.cols.length - 1];
+    const isMastered = newColId === lastCol.id && s.cols.length > 1;
+    burst(cxPos, cyPos, drag.color, isMastered ? 48 : 20);
+    render(true);
+  } else if (drag.type === 'col') {
+    drag.ph.parentNode.insertBefore(drag.el, drag.ph);
+    drag.el.style.display = '';
+    drag.ph.remove();
+    drag.clone.remove();
+
+    const newColOrderIds = [...$('board').querySelectorAll('.col[data-col]')].map(el => el.dataset.col);
+    s.cols.sort((a, b) => newColOrderIds.indexOf(a.id) - newColOrderIds.indexOf(b.id));
+    activeColId = drag.id;
+    save();
+    burst(cxPos, dropRect.top + 30, drag.color, 24);
+    render(true);
+  }
+
+  drag = null;
+}
+
+/* =========================================================
+   6. محرك الـ HTML5 Canvas للجزيئات الحادة
+========================================================= */
+const cv=$('fx'),cx=cv.getContext('2d');let P=[],run=false;
+function size(){cv.width=innerWidth;cv.height=innerHeight}
+addEventListener('resize',size);size();
+
+function spawnTrail(x, y, col) {
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  P.push({
+    x: x + (Math.random() - 0.5) * 14,
+    y: y + (Math.random() - 0.5) * 14,
+    vx: (Math.random() - 0.5) * 1.6,
+    vy: (Math.random() - 0.5) * 1.6,
+    g: 0,
+    s: 3 + Math.random() * 4,
+    r: Math.random() * 6,
+    vr: (Math.random() - 0.5) * 0.2,
+    l: 0.85,
+    d: 0.045,
+    c: col || '#ececee'
+  });
+  if(!run){run=true;requestAnimationFrame(tick)}
+}
+
+function burst(x,y,col,count=46){
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  const cols=[col||'#4de3c1','#ececee','#ffb23e'];
+  for(let i=0;i<count;i++){
+    const a=Math.random()*Math.PI*2,v=2.5+Math.random()*7;
+    P.push({
+      x,y,
+      vx:Math.cos(a)*v,
+      vy:Math.sin(a)*v - 2.5,
+      g:0.22,
+      s:3+Math.random()*5.5,
+      r:Math.random()*6,
+      vr:(Math.random()-.5)*.35,
+      l:1,
+      d:0.02,
+      c:cols[i%3]
+    });
+  }
+  if(!run){run=true;requestAnimationFrame(tick)}
+}
+
+function tick(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  P=P.filter(p=>p.l>0);
+  for(const p of P){
+    p.x+=p.vx;
+    p.y+=p.vy;
+    p.vy+=p.g;
+    p.vx*=.985;
+    p.r+=p.vr;
+    p.l-=p.d;
+    cx.save();
+    cx.globalAlpha=Math.max(p.l,0);
+    cx.translate(p.x,p.y);
+    cx.rotate(p.r);
+    cx.fillStyle=p.c;
+    cx.fillRect(-p.s/2,-p.s/2,p.s,p.size||p.s);
+    cx.restore();
+  }
+  if(P.length)requestAnimationFrame(tick);
+  else{run=false;cx.clearRect(0,0,cv.width,cv.height)}
+}
+
+initImageDB().then(() => {
+  migrateOldImages();
+  render();
+});
+</script>
+</body>
+</html>
